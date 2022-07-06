@@ -152,7 +152,7 @@ export default {
         left: `${area.left}px`,
         border: '1px dashed gray',
         backgroundColor: 'green',
-        zIndex: 3,
+        zIndex: this.isCurrentlyMoving ? 5 : 3,
         width: `${area.width}px`,
         height: `${area.height}px`,
         opacity: 0.5,
