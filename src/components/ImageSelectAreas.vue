@@ -120,7 +120,7 @@ export default {
         top: 0,
         left: 0,
         cursor: 'crosshair',
-        zIndex: 2,
+        zIndex: this.isCurrentlyDrawing ? 5 : 2,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
       };
     },
