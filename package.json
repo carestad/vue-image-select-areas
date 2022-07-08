@@ -9,9 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@interactjs/actions": "^1.10.14",
-    "@interactjs/interact": "^1.10.14",
-    "@interactjs/modifiers": "^1.10.14",
     "interactjs": "^1.10.14",
     "vue": "^3.2.25"
   },
