@@ -5,25 +5,32 @@ import ImageSelectAreas from './components/ImageSelectAreas.vue';
 
 const areas = [
   {
-    left: 390.5, 
-    top: 181.13333129882812,
-    width: 155,
-    height: 276,
-    relativeWidth: 0.27927927927927926,
-    relativeHeight: 0.35159235668789807,
-    relativeX: 0.9882882882882883,
-    relativeY: 0.5861571099348128,
-  }
+    left: 380.5,
+    top: 451.1333312988281,
+    startX: 359.5,
+    startY: 521.1333312988281,
+    width: 159,
+    height: 273,
+    relativeWidth: 0.2864864864864865,
+    relativeHeight: 0.34777070063694265,
+    relativeX: 0.6981981981981982,
+    relativeY: 0.5874309952851313,
+  },
 ];
+
+const dealWithAdded = stuff => {
+  console.log('Added', stuff);
+};
 </script>
 
 <template>
   <div class="index">
     <h1>Her skal det tagges!</h1>
     <div class="image">
-      <image-select-areas 
+      <image-select-areas
         url="https://s3.kupp.no/staging/rema-1000/2022/27/nordreostland-8.jpg"
-        :existing-areas="areas"
+        @added="dealWithAdded"
+        v-model="areas"
       />
     </div>
   </div>
