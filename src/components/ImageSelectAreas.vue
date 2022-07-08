@@ -61,11 +61,12 @@ export default {
       type: [String, Number],
       default: '100%',
     },
-    existingAreas: {
+    modelValue: {
       type: Array,
       default: () => [],
     },
   },
+  emits: ['update:modelValue'],
 
   data: () => ({
     areas: [],
@@ -73,6 +74,12 @@ export default {
     isCurrentlyDrawing: false,
     currentlyDrawing: {},
   }),
+
+  watch: {
+    areas(newAreas) {
+      this.$emit('update:modelValue', newAreas);
+    },
+  },
 
   computed: {
     rootStyle() {
@@ -170,7 +177,7 @@ export default {
   methods: {
     onImageLoaded(event) {
       console.log('Image loaded', event);
-      this.areas = this.existingAreas.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
+      this.areas = this.modelValue.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
     },
     areaStyles(area) {
       return {
