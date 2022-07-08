@@ -1,63 +1,47 @@
 <template>
   <div class="root" :style="rootStyle">
-    <img
-      :src="url"
-      ref="image"
-      :style="imageStyles"
-      :width="width"
-      :height="height"
-    />
-    <div 
-      ref="overlay" 
+    <img :src="url" ref="image" :style="imageStyles" :width="width" :height="height" @load="onImageLoaded" />
+    <div
+      ref="overlay"
       :style="overlayStyles"
-      @mousedown="onMouseDown"
-      @mousemove="onMouseMoveDebounced"
-      @mouseup="onMouseUp"
-    >
-    </div>
+      @mousedown.self="onMouseDown"
+      @mousemove.self="onMouseMoveDebounced"
+      @mouseup.self="onMouseUp"
+      @dragstart="onDrawStart"
+    ></div>
     <div v-if="isCurrentlyDrawing" :style="currentlyDrawingStyles"></div>
-    <div 
-      v-for="(area, index) in areas" 
-      :key="`area-${index}`" 
-      :class="['area', {selected: currentlySelectedIndex === index}]" 
-      :style="areaStyles(area)" 
-      @click="onSelectArea(area, index)"
-      @mousedown="onAreaMouseDown($event, area, index)"
-      @mousemove="onAreaMoveDebounced($event, area, index)"
-      @mouseup="onAreaMouseUp($event, area, index)"
+    <div
+      v-for="(area, index) in areas"
+      :key="`area-${index}`"
+      :class="['area', { selected: currentlySelectedIndex === index }]"
+      :style="areaStyles(area)"
+      :data-index="index"
     />
   </div>
 </template>
 
 <script>
+import interact from 'interactjs';
+
 // https://stackoverflow.com/a/65081210/1223692
 /**
- * @param {function} func 
- * @param {number} wait 
- * @param {boolean} immediate 
+ * @param {function} func
+ * @param {number} wait
+ * @param {boolean} immediate
  */
 const debounce = (func, wait, immediate) => {
   var timeout;
-  return function() {
-      var context = this, args = arguments;
-      var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
-  };
-};
-
-const relativeToAbsolutes = (input, image) => {
-  return {
-    ...input,
-    x: image.width*input.relativeX,
-    y: image.height*input.relativeY,
-    width: image.width*input.relativeWidth,
-    height: image.height*input.relativeHeight,
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
   };
 };
 
@@ -87,12 +71,7 @@ export default {
     areas: [],
     currentlySelectedIndex: null,
     isCurrentlyDrawing: false,
-    isCurrentlyMoving: false,
     currentlyDrawing: {},
-    currentlyMoving: {
-      startX: null,
-      startY: null,
-    },
   }),
 
   computed: {
@@ -133,42 +112,92 @@ export default {
   },
 
   mounted() {
-    this.areas = this.existingAreas.map(area => this.computeExistingAreaSizes(area));
     console.log('Mounted', this.existingAreas);
+    const image = this.$refs.image;
+    const imageBounding = image.getBoundingClientRect();
+    const interaction = interact('.area');
+
+    const restrictToParent = interact.modifiers.restrict({
+      restriction: 'parent',
+      elementRect: {left: 0, right: 1, top: 0, bottom: 1},
+    });
+    interaction.draggable({
+      modifiers: [restrictToParent],
+      listeners: {
+        start: (event) => {
+          console.log(event.type, event.target)
+        },
+        move: (event) => {
+          const areaIndex = event.target.getAttribute('data-index');
+          const area = this.areas[areaIndex];
+          area.top += event.dy;
+          area.left += event.dx;
+        },
+      }
+    });
+    interaction.resizable({
+      edges: { top: true, left: true, bottom: true, right: true },
+      modifiers: [
+        interact.modifiers.restrictSize({ max: 'parent' }),
+      ],
+      // invert: 'reposition',
+      listeners: {
+        move: (event) => {
+          const areaIndex = event.target.getAttribute('data-index');
+          const area = this.areas[areaIndex];          
+
+          // X and Y positions relative to the parent (the image)
+          const relX = event.rect.left - imageBounding.left;
+          const relY = event.rect.top - imageBounding.top;
+
+          area.width = event.rect.width
+          area.height = event.rect.height
+          area.top = relY;
+          area.left = relX;
+          area.relativeWidth = event.rect.width/image.width;
+          area.relativeHeight = event.rect.height/image.height;
+          area.relativeX = relX/image.width;
+          area.relativeY = relY/image.height;
+        }
+      }
+    });
   },
   created() {
     this.resetCurrentlyDrawing();
     this.onMouseMoveDebounced = debounce(this.onMouseMove, 10);
-    this.onAreaMoveDebounced = debounce(this.onAreaMouseMove, 10);
   },
 
   methods: {
+    onImageLoaded(event) {
+      console.log('Image loaded', event);
+      this.areas = this.existingAreas.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
+    },
     areaStyles(area) {
-      // console.log('Get area style', area);
-
       return {
         position: 'absolute',
         top: `${area.top}px`,
         left: `${area.left}px`,
         border: '1px dashed gray',
         backgroundColor: 'green',
-        zIndex: this.isCurrentlyMoving ? 5 : 3,
+        zIndex: 3,
         width: `${area.width}px`,
         height: `${area.height}px`,
         opacity: 0.5,
       };
     },
-    computeExistingAreaSizes(area) {
-      const image = this.$refs.image;
-      console.log('Compute', area);
-      return area;
-      // return {
-      //   ...area,
-      //   top: image.naturalWidth*area.relativeX,
-      //   left: image.naturalHeight*area.relativeY,
-      //   width: image.naturalWidth*area.relativeWidth,
-      //   height: image.naturalHeight*area.relativeHeight,
-      // };
+    computeExistingAreaSizes(area, image) {
+      const newArea = {
+        width: image.width * area.relativeWidth,
+        height: image.height * area.relativeHeight,
+        x: image.width * area.relativeX,
+        y: image.height * area.relativeY,
+      };
+      
+      // return area;
+      return {
+        ...area,
+        ...newArea,
+      };
     },
     resetCurrentlyDrawing() {
       this.currentlyDrawing = {
@@ -188,6 +217,9 @@ export default {
     /**
      * AREA DRAWING
      */
+    onDrawStart(event) {
+      console.log('[onDrawStart]');
+    },
     onMouseDown(event) {
       const bounding = event.target.getBoundingClientRect();
       const x = event.clientX - bounding.left;
@@ -204,7 +236,7 @@ export default {
       this.currentlyDrawing.top = this.currentlyDrawing.startY = y;
 
       this.isCurrentlyDrawing = true;
-      
+
       console.log(`[onMouseDown] At ${x}x${y}`);
     },
     onMouseUp(event) {
@@ -213,13 +245,19 @@ export default {
       const x = event.clientX - bounding.left;
       const y = event.clientY - bounding.top;
 
-      this.currentlyDrawing.relativeWidth = this.currentlyDrawing.width/image.width;
-      this.currentlyDrawing.relativeHeight = this.currentlyDrawing.height/image.height;
-      this.currentlyDrawing.relativeX = x/image.width;
-      this.currentlyDrawing.relativeY = y/image.height;
+      this.currentlyDrawing.relativeWidth = this.currentlyDrawing.width / image.width;
+      this.currentlyDrawing.relativeHeight = this.currentlyDrawing.height / image.height;
+      this.currentlyDrawing.relativeX = x / image.width;
+      this.currentlyDrawing.relativeY = y / image.height;
+
+      // x: area.x/image.width,
+      // y: area.y/image.height,
+      // width: area.width/image.width,
+      // height: area.height/image.height,
 
       this.isCurrentlyDrawing = false;
       this.areas.push(this.currentlyDrawing);
+      this.$emit('added', this.currentlyDrawing);
       this.resetCurrentlyDrawing();
 
       console.log(`[onMouseUp] At ${x}x${y}`);
@@ -235,86 +273,25 @@ export default {
       const padding = 3;
 
       // Width of current selection, when regular left to right
-      const width = imageX-this.currentlyDrawing.startX;
-      const height = imageY-this.currentlyDrawing.startY;
+      const width = imageX - this.currentlyDrawing.startX;
+      const height = imageY - this.currentlyDrawing.startY;
 
-      this.currentlyDrawing.width = width-padding;
-      this.currentlyDrawing.height = height-padding;
+      this.currentlyDrawing.width = width - padding;
+      this.currentlyDrawing.height = height - padding;
 
       // console.log(`[onMouseMove] size ${width}x${height} | x: ${imageX}, y: ${imageY}`);
 
       if (imageY < this.currentlyDrawing.startY) {
         // console.log(`[onMouseMove] Moving bottom to top!`, bounding);
-        this.currentlyDrawing.top = imageY+padding;
-        this.currentlyDrawing.height = this.currentlyDrawing.startY-imageY;
+        this.currentlyDrawing.top = imageY + padding;
+        this.currentlyDrawing.height = this.currentlyDrawing.startY - imageY;
       }
 
       if (imageX < this.currentlyDrawing.startX) {
         // console.log(`[onMouseMove] Moving left to right!`, bounding);
-        this.currentlyDrawing.left = imageX+padding;
-        this.currentlyDrawing.width = this.currentlyDrawing.startX-imageX;
+        this.currentlyDrawing.left = imageX + padding;
+        this.currentlyDrawing.width = this.currentlyDrawing.startX - imageX;
       }
-    },
-
-     /**
-      * AREA REORGANIZING
-      */
-    onSelectArea(area, index) {
-      console.log(`[onSelectArea] Hellu`, area);
-
-      if (this.currentlySelectedIndex === index) {
-        this.currentlySelectedIndex = null;
-        return;
-      }
-
-      this.currentlySelectedIndex = index;
-    },
-    onAreaMouseDown(event, area, index) {
-      if (this.currentlySelectedIndex !== index) {
-        return;
-      }
-
-      if (this.isCurrentlyMoving) {
-        this.isCurrentlyMoving = false;
-        this.currentlyMoving.startX = null;
-        this.currentlyMoving.startY = null;
-        return;
-      }
-
-      const bounding = event.target.getBoundingClientRect();
-      const x = event.clientX - bounding.left;
-      const y = event.clientY - bounding.top;
-
-      this.isCurrentlyMoving = true;
-      this.currentlyMoving.startX = x;
-      this.currentlyMoving.startY = y;
-    },
-    onAreaMouseUp(event, area, index) {
-      if (this.currentlySelectedIndex !== index) {
-        return;
-      }
-
-      this.isCurrentlyMoving = false;
-      this.currentlyMoving.startX = null;
-      this.currentlyMoving.startY = null;
-    },
-    onAreaMouseMove(event, area, index) {
-      if (this.currentlySelectedIndex !== index || !this.isCurrentlyMoving) {
-        return;
-      }
-
-      const bounding = event.target.getBoundingClientRect();
-      const x = event.clientX - bounding.left;
-      const y = event.clientY - bounding.top;
-
-      // Calculate diff in left/top/bottom/right when moving
-      const diffX = this.currentlyMoving.startX-x;
-      const diffY = this.currentlyMoving.startY-y;
-
-      area.top -= diffY;
-      area.left -= diffX;
-
-      // console.log(`[onAreaMouseMove] diff: ${diffX} / ${diffY}`);
     },
   },
 };
