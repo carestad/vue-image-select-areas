@@ -196,8 +196,8 @@ export default {
       const newArea = {
         width: image.width * area.relativeWidth,
         height: image.height * area.relativeHeight,
-        x: image.width * area.relativeX,
-        y: image.height * area.relativeY,
+        left: image.width * area.relativeX,
+        top: image.height * area.relativeY,
       };
       
       // return area;
