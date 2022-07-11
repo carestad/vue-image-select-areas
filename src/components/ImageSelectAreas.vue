@@ -257,10 +257,8 @@ export default {
       this.currentlyDrawing.relativeX = x / image.width;
       this.currentlyDrawing.relativeY = y / image.height;
 
-      // x: area.x/image.width,
-      // y: area.y/image.height,
-      // width: area.width/image.width,
-      // height: area.height/image.height,
+      delete this.currentlyDrawing.startX;
+      delete this.currentlyDrawing.startY;
 
       this.isCurrentlyDrawing = false;
       this.areas.push(this.currentlyDrawing);
