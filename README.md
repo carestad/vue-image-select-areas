@@ -31,12 +31,8 @@ The data emitted by `v-model` events is an array of objects, where the objects h
 | `relativeY` (float) | `0.2` | Calculated relative Y position
 | `width` (float) | `123.5` | Actual selection width
 | `height` (float) | `39.2` | Actual selection height
-| `startX` (float) | `123.2` | Initial X position
-| `startY` (float) | `345.2` | Initial Y position
-| `top` (float) | `34.2` | Top (y) position
-| `left` (float) | `40.3` | Left (x) position
-| `x` (float) | `40.3` | Left position. Alias of `left`
-| `y` (float) | `34.2` | Top position. Alias of `top`
+| `top` (float) | `34.2` | Actual top (y) position
+| `left` (float) | `40.3` | Actual left (x) position
 
 Only `relativeWidth`, `relativeHeight`, `relativeX` and `relativeY` is required in the object when passing it _to_ the component initially as `v-model`/`:value`.
 
