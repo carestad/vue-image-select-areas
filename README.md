@@ -34,7 +34,7 @@ The data emitted by `v-model` events is an array of objects, where the objects h
 | `top` (float) | `34.2` | Actual top (y) position
 | `left` (float) | `40.3` | Actual left (x) position
 
-Only `relativeWidth`, `relativeHeight`, `relativeX` and `relativeY` is required in the object when passing it _to_ the component initially as `v-model`/`:value`.
+Only `relativeWidth`, `relativeHeight`, `relativeX` and `relativeY` is required in the object when passing it _to_ the component initially as `v-model`/`:value`. They will be computed to actual values when the image is loaded.
 
 ## Example
 
