@@ -25,10 +25,11 @@ const dealWithAdded = stuff => {
 
 <template>
   <div class="index">
-    <h1>Her skal det tagges!</h1>
+    <h1>Image select areas</h1>
+    <em>Click and drag over the image, resize and move areas around.</em>
     <div class="image">
       <image-select-areas
-        url="https://s3.kupp.no/staging/rema-1000/2022/27/nordreostland-8.jpg"
+        url="https://picsum.photos/500/800"
         @added="dealWithAdded"
         v-model="areas"
       />
@@ -52,8 +53,12 @@ const dealWithAdded = stuff => {
   flex-direction: column;
 }
 
+.index em {
+  margin-bottom: 20px;
+}
+
 .image {
   margin: 0px auto;
-  width: 555px;
+  max-height: 100vh;
 }
 </style>
