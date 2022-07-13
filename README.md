@@ -58,3 +58,5 @@ const areas = [
   v-model="areas"
 />
 ```
+
+Also see demo here: [https://vue-image-select-areas.herokuapp.com/](https://vue-image-select-areas.herokuapp.com/)
