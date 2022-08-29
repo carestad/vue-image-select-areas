@@ -36,7 +36,11 @@ function clearAreas() {
         url="https://dummyimage.com/500x800/fff/aaa"
         @added="dealWithAdded"
         v-model="areas"
-      />
+      >
+        <template #default>
+          <span>Default slot</span>
+        </template>
+      </image-select-areas>
     </div>
     <div class="toolbar">
       <button class="clear" @click="clearAreas">Clear</button>
