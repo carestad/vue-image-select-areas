@@ -6,12 +6,7 @@ import {ref} from 'vue';
 
 const areas = ref([
   {
-    // left: 380.5,
-    // top: 451.1333312988281,
-    // startX: 359.5,
-    // startY: 521.1333312988281,
-    // width: 159,
-    // height: 273,
+    // Only the relative values are required in the objects
     relativeWidth: 0.2864864864864865,
     relativeHeight: 0.34777070063694265,
     relativeX: 0.6981981981981982,
