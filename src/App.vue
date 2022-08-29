@@ -2,8 +2,9 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import ImageSelectAreas from './components/ImageSelectAreas.vue';
+import {ref} from 'vue';
 
-const areas = [
+const areas = ref([
   {
     // left: 380.5,
     // top: 451.1333312988281,
@@ -16,10 +17,13 @@ const areas = [
     relativeX: 0.6981981981981982,
     relativeY: 0.5874309952851313,
   },
-];
+]);
 
 const dealWithAdded = stuff => {
   console.log('Added', stuff);
+};
+function clearAreas() {
+  areas.value = [];
 };
 </script>
 
@@ -33,6 +37,9 @@ const dealWithAdded = stuff => {
         @added="dealWithAdded"
         v-model="areas"
       />
+    </div>
+    <div class="toolbar">
+      <button class="clear" @click="clearAreas">Clear</button>
     </div>
   </div>
 </template>
