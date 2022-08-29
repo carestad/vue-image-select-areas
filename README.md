@@ -37,6 +37,13 @@ The data emitted by `v-model` events is an array of objects, where the objects h
 
 Only `relativeWidth`, `relativeHeight`, `relativeX` and `relativeY` is required in the object when passing it _to_ the component initially as `v-model`/`:value`. They will be computed to actual values when the image is loaded.
 
+## Slots
+
+| Name | Injected data | Default |
+| -- | -- | -- |
+| `default` | `area` object | none |
+| `removable` | - | Depends on `removable` prop. If true, a default delete button is shown in the top right corner. |
+
 ## Example
 
 ```vue
