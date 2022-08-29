@@ -41,8 +41,8 @@ Only `relativeWidth`, `relativeHeight`, `relativeX` and `relativeY` is required 
 
 | Name | Injected data | Default |
 | -- | -- | -- |
-| `default` | `area` object | none |
-| `removable` | - | Depends on `removable` prop. If true, a default delete button is shown in the top right corner. |
+| `default` | `{area, index}` | none |
+| `toolbar` | `{area, index}` | Depends on `removable` prop. If true, a default delete button is shown in the top right corner. |
 
 ## Example
 

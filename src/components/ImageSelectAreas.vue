@@ -17,12 +17,12 @@
       :style="areaStyles(area)"
       :data-index="index"
     >
-      <slot name="removable">
+      <slot name="toolbar" v-bind="{area, index}">
         <template v-if="removable">
           <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
         </template>
       </slot>
-      <slot name="default" v-bind="area" />
+      <slot name="default" v-bind="{area, index}" />
     </div>
   </div>
 </template>
