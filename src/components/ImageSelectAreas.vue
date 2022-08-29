@@ -65,6 +65,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    removable: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ['update:modelValue', 'added'],
 
