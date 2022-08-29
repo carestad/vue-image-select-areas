@@ -79,6 +79,9 @@ export default {
     areas(newAreas) {
       this.$emit('update:modelValue', newAreas);
     },
+    modelValue(newAreas) {
+      this.areas = newAreas;
+    },
   },
 
   computed: {
