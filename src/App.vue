@@ -14,13 +14,11 @@ const areas = ref([
   },
 ]);
 
-const dealWithAdded = (newArea) => {
-  console.log('Added', newArea);
+const onAdded = (newArea) => {
   newArea.label = 'Test';
 };
 const onEditAreaLabel = index => {
   const area = areas.value[index];
-  console.log('Edit label', index, area);
   area.label = prompt('Label?', area.label ?? '');
 };
 const onDeleteArea = index => {
@@ -38,7 +36,7 @@ function clearAreas() {
     <div class="image">
       <image-select-areas
         url="https://dummyimage.com/500x800/fff/aaa"
-        @added="dealWithAdded"
+        @added="onAdded"
         v-model="areas"
       >
         <template #default="{area}">
