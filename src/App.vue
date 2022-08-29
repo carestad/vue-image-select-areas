@@ -65,7 +65,6 @@ function clearAreas() {
 }
 
 .image {
-  margin: 0px auto;
   max-height: 100vh;
 }
 </style>
