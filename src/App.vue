@@ -14,8 +14,17 @@ const areas = ref([
   },
 ]);
 
-const dealWithAdded = stuff => {
-  console.log('Added', stuff);
+const dealWithAdded = (newArea) => {
+  console.log('Added', newArea);
+  newArea.label = 'Test';
+};
+const onEditAreaLabel = index => {
+  const area = areas.value[index];
+  console.log('Edit label', index, area);
+  area.label = prompt('Label?', area.label ?? '');
+};
+const onDeleteArea = index => {
+  areas.value.splice(index, 1);
 };
 function clearAreas() {
   areas.value = [];
@@ -32,11 +41,17 @@ function clearAreas() {
         @added="dealWithAdded"
         v-model="areas"
       >
-        <template #default="area">
+        <template #default="{area}">
           <div>
-            <div>Default slot</div>
+            <div>{{area.label ?? 'Default slot'}}</div>
             <div>Position: {{area.left}} / {{area.top}}</div>
             <div>Size: {{Math.round(area.width)}}x{{Math.round(area.height)}}px</div>
+          </div>
+        </template>
+        <template #toolbar="{index}">
+          <div class="toolbar">
+            <button class="edit" @click="onEditAreaLabel(index)" title="Edit label">🏷</button>
+            <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
           </div>
         </template>
       </image-select-areas>
@@ -69,5 +84,14 @@ function clearAreas() {
 
 .image {
   max-height: 100vh;
+}
+
+.image .toolbar {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.image .toolbar * {
+  margin-left: 5px;
 }
 </style>
