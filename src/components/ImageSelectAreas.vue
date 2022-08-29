@@ -166,6 +166,11 @@ export default {
             const area = this.areas[areaIndex];
             area.top += event.dy;
             area.left += event.dx;
+
+            area.relativeWidth = event.rect.width/image.width;
+            area.relativeHeight = event.rect.height/image.height;
+            area.relativeX = area.left/image.width;
+            area.relativeY = area.top/image.height;
           },
         }
       });
