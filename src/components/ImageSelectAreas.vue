@@ -199,6 +199,9 @@ export default {
         width: `${area.width}px`,
         height: `${area.height}px`,
         opacity: 0.5,
+        display: 'inline-flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       };
     },
     computeExistingAreaSizes(area, image) {
