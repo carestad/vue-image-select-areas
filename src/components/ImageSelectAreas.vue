@@ -7,7 +7,6 @@
       @mousedown.self="onMouseDown"
       @mousemove.self="onMouseMoveDebounced"
       @mouseup.self="onMouseUp"
-      @dragstart="onDrawStart"
     ></div>
     <div v-if="isCurrentlyDrawing" :style="currentlyDrawingStyles"></div>
     <div
@@ -159,7 +158,7 @@ export default {
         modifiers: [restrictToParent],
         listeners: {
           start: (event) => {
-            console.log(event.type, event.target)
+            // console.log(event.type, event.target)
           },
           move: (event) => {
             const areaIndex = event.target.getAttribute('data-index');
@@ -248,9 +247,6 @@ export default {
     /**
      * AREA DRAWING
      */
-    onDrawStart(event) {
-      console.log('[onDrawStart]');
-    },
     onMouseDown(event) {
       const bounding = event.target.getBoundingClientRect();
       const x = event.clientX - bounding.left;
