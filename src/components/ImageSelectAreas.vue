@@ -22,6 +22,7 @@
           <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
         </template>
       </slot>
+      <slot name="default" v-bind="area" />
     </div>
   </div>
 </template>
