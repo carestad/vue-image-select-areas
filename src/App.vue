@@ -29,7 +29,7 @@ const dealWithAdded = stuff => {
     <em>Click and drag over the image, resize and move areas around.</em>
     <div class="image">
       <image-select-areas
-        url="https://picsum.photos/500/800"
+        url="https://dummyimage.com/500x800/fff/aaa"
         @added="dealWithAdded"
         v-model="areas"
       />
