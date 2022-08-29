@@ -16,7 +16,13 @@
       :class="['area', { selected: currentlySelectedIndex === index }]"
       :style="areaStyles(area)"
       :data-index="index"
-    />
+    >
+      <slot name="removable">
+        <template v-if="removable">
+          <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
+        </template>
+      </slot>
+    </div>
   </div>
 </template>
 
@@ -310,6 +316,10 @@ export default {
         this.currentlyDrawing.width = this.currentlyDrawing.startX - imageX;
       }
     },
+
+    onDeleteArea(index) {
+      this.areas.splice(index, 1);
+    },
   },
 };
 </script>
@@ -318,5 +328,13 @@ export default {
 .area.selected {
   border: 2px dashed black !important;
   cursor: pointer;
+}
+.area {
+  position: relative;
+}
+.area .delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 </style>
