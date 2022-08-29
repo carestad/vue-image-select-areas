@@ -37,8 +37,12 @@ function clearAreas() {
         @added="dealWithAdded"
         v-model="areas"
       >
-        <template #default>
-          <span>Default slot</span>
+        <template #default="area">
+          <div>
+            <div>Default slot</div>
+            <div>Position: {{area.left}} / {{area.top}}</div>
+            <div>Size: {{Math.round(area.width)}}x{{Math.round(area.height)}}px</div>
+          </div>
         </template>
       </image-select-areas>
     </div>
