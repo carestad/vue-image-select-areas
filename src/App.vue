@@ -13,6 +13,7 @@ const areas = ref([
     relativeY: 0.5874309952851313,
   },
 ]);
+const output = ref('');
 
 const onAdded = (newArea) => {
   newArea.label = 'Test';
@@ -24,8 +25,12 @@ const onEditAreaLabel = index => {
 const onDeleteArea = index => {
   areas.value.splice(index, 1);
 };
-function clearAreas() {
+const clearAreas = () => {
   areas.value = [];
+};
+
+const saveAreas = () => {
+  output.value = JSON.stringify(areas.value, undefined, 2);
 };
 </script>
 
@@ -56,7 +61,9 @@ function clearAreas() {
     </div>
     <div class="toolbar">
       <button class="clear" @click="clearAreas">Clear</button>
+      <button class="save" @click="saveAreas">Show output</button>
     </div>
+    <pre v-if="output" style="text-align: start">{{output}}</pre>
   </div>
 </template>
 
@@ -83,7 +90,6 @@ function clearAreas() {
 .image {
   max-height: 100vh;
 }
-
 .image .toolbar {
   position: absolute;
   top: 5px;
