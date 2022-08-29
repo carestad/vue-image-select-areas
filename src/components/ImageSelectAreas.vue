@@ -123,54 +123,6 @@ export default {
 
   mounted() {
     console.log('Mounted', this.existingAreas);
-    const image = this.$refs.image;
-    const imageBounding = image.getBoundingClientRect();
-    const interaction = interact('.area');
-
-    const restrictToParent = interact.modifiers.restrict({
-      restriction: 'parent',
-      elementRect: {left: 0, right: 1, top: 0, bottom: 1},
-    });
-    interaction.draggable({
-      modifiers: [restrictToParent],
-      listeners: {
-        start: (event) => {
-          console.log(event.type, event.target)
-        },
-        move: (event) => {
-          const areaIndex = event.target.getAttribute('data-index');
-          const area = this.areas[areaIndex];
-          area.top += event.dy;
-          area.left += event.dx;
-        },
-      }
-    });
-    interaction.resizable({
-      edges: { top: true, left: true, bottom: true, right: true },
-      modifiers: [
-        interact.modifiers.restrictSize({ max: 'parent' }),
-      ],
-      // invert: 'reposition',
-      listeners: {
-        move: (event) => {
-          const areaIndex = event.target.getAttribute('data-index');
-          const area = this.areas[areaIndex];          
-
-          // X and Y positions relative to the parent (the image)
-          const relX = event.rect.left - imageBounding.left;
-          const relY = event.rect.top - imageBounding.top;
-
-          area.width = event.rect.width
-          area.height = event.rect.height
-          area.top = relY;
-          area.left = relX;
-          area.relativeWidth = event.rect.width/image.width;
-          area.relativeHeight = event.rect.height/image.height;
-          area.relativeX = relX/image.width;
-          area.relativeY = relY/image.height;
-        }
-      }
-    });
   },
   created() {
     this.resetCurrentlyDrawing();
@@ -179,8 +131,58 @@ export default {
 
   methods: {
     onImageLoaded(event) {
-      console.log('Image loaded', event);
+      console.log('Image loaded', event, this.$refs.image);
       this.areas = this.modelValue.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
+      this.bindInteractionEvents();
+    },
+    bindInteractionEvents() {
+      const image = this.$refs.image;
+      const imageBounding = image.getBoundingClientRect();
+      const interaction = interact('.area');
+
+      const restrictToParent = interact.modifiers.restrict({
+        restriction: 'parent',
+        elementRect: {left: 0, right: 1, top: 0, bottom: 1},
+      });
+      interaction.draggable({
+        modifiers: [restrictToParent],
+        listeners: {
+          start: (event) => {
+            console.log(event.type, event.target)
+          },
+          move: (event) => {
+            const areaIndex = event.target.getAttribute('data-index');
+            const area = this.areas[areaIndex];
+            area.top += event.dy;
+            area.left += event.dx;
+          },
+        }
+      });
+      interaction.resizable({
+        edges: { top: true, left: true, bottom: true, right: true },
+        modifiers: [
+          interact.modifiers.restrictSize({ max: 'parent' }),
+        ],
+        listeners: {
+          move: (event) => {
+            const areaIndex = event.target.getAttribute('data-index');
+            const area = this.areas[areaIndex];
+
+            // X and Y positions relative to the parent (the image)
+            const relX = event.rect.left - imageBounding.left;
+            const relY = event.rect.top - imageBounding.top;
+
+            area.width = event.rect.width
+            area.height = event.rect.height
+            area.top = relY;
+            area.left = relX;
+            area.relativeWidth = event.rect.width/image.width;
+            area.relativeHeight = event.rect.height/image.height;
+            area.relativeX = relX/image.width;
+            area.relativeY = relY/image.height;
+          }
+        }
+      });
     },
     areaStyles(area) {
       return {
