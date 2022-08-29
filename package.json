@@ -1,5 +1,5 @@
 {
-  "name": "vue-image-create-areas",
+  "name": "vue-image-select-areas",
   "private": true,
   "version": "1.0.0",
   "main": "./src/components/ImageSelectAreas.vue",
