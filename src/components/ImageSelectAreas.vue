@@ -3,12 +3,13 @@
     <img :src="url" ref="image" :style="imageStyles" :width="width" :height="height" @load="onImageLoaded" />
     <div
       ref="overlay"
+      class="overlay"
       :style="overlayStyles"
       @mousedown.self="onMouseDown"
       @mousemove.self="onMouseMoveDebounced"
       @mouseup.self="onMouseUp"
     ></div>
-    <div v-if="isCurrentlyDrawing" :style="currentlyDrawingStyles"></div>
+    <div v-if="isCurrentlyDrawing" ref="currentlyDrawing" :style="currentlyDrawingStyles"></div>
     <div
       v-for="(area, index) in areas"
       :key="`area-${index}`"
@@ -18,7 +19,9 @@
     >
       <slot name="toolbar" v-bind="{area, index}">
         <template v-if="removable">
-          <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
+          <div class="toolbar">
+            <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
+          </div>
         </template>
       </slot>
       <slot name="default" v-bind="{area, index}" />
@@ -98,6 +101,7 @@ export default {
     rootStyle() {
       return {
         position: 'relative',
+        display: 'inline-block',
       };
     },
     styles() {
@@ -131,9 +135,7 @@ export default {
     },
   },
 
-  mounted() {
-    console.log('Mounted', this.existingAreas);
-  },
+
   created() {
     this.resetCurrentlyDrawing();
     this.onMouseMoveDebounced = debounce(this.onMouseMove, 10);
@@ -141,7 +143,6 @@ export default {
 
   methods: {
     onImageLoaded(event) {
-      console.log('Image loaded', event, this.$refs.image);
       this.areas = this.modelValue.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
       this.bindInteractionEvents();
     },
@@ -158,7 +159,6 @@ export default {
         modifiers: [restrictToParent],
         listeners: {
           start: (event) => {
-            // console.log(event.type, event.target)
           },
           move: (event) => {
             const areaIndex = event.target.getAttribute('data-index');
@@ -222,7 +222,7 @@ export default {
         left: image.width * area.relativeX,
         top: image.height * area.relativeY,
       };
-      
+
       // return area;
       return {
         ...area,
@@ -263,14 +263,18 @@ export default {
       this.currentlyDrawing.top = this.currentlyDrawing.startY = y;
 
       this.isCurrentlyDrawing = true;
-
-      console.log(`[onMouseDown] At ${x}x${y}`);
     },
     onMouseUp(event) {
+      // Don't trigger on other mouse buttons than left
+      if (event.button !== 0) {
+        return;
+      }
+
       const image = this.$refs.image;
-      const bounding = event.target.getBoundingClientRect();
-      const x = event.clientX - bounding.left;
-      const y = event.clientY - bounding.top;
+      const overlayBounding = this.$refs.overlay.getBoundingClientRect();
+      const bounding = this.$refs.currentlyDrawing.getBoundingClientRect();
+      const x = bounding.left - overlayBounding.left;
+      const y = bounding.top - overlayBounding.top;
 
       this.currentlyDrawing.relativeWidth = this.currentlyDrawing.width / image.width;
       this.currentlyDrawing.relativeHeight = this.currentlyDrawing.height / image.height;
@@ -285,7 +289,6 @@ export default {
       this.$emit('added', this.currentlyDrawing);
       this.resetCurrentlyDrawing();
 
-      console.log(`[onMouseUp] At ${x}x${y}`);
     },
     onMouseMove(event) {
       if (!this.isCurrentlyDrawing) {
@@ -304,16 +307,13 @@ export default {
       this.currentlyDrawing.width = width - padding;
       this.currentlyDrawing.height = height - padding;
 
-      // console.log(`[onMouseMove] size ${width}x${height} | x: ${imageX}, y: ${imageY}`);
 
       if (imageY < this.currentlyDrawing.startY) {
-        // console.log(`[onMouseMove] Moving bottom to top!`, bounding);
         this.currentlyDrawing.top = imageY + padding;
         this.currentlyDrawing.height = this.currentlyDrawing.startY - imageY;
       }
 
       if (imageX < this.currentlyDrawing.startX) {
-        // console.log(`[onMouseMove] Moving left to right!`, bounding);
         this.currentlyDrawing.left = imageX + padding;
         this.currentlyDrawing.width = this.currentlyDrawing.startX - imageX;
       }
@@ -334,9 +334,16 @@ export default {
 .area {
   position: relative;
 }
-.area .delete {
+.area .toolbar {
   position: absolute;
   top: 5px;
   right: 5px;
+}
+.area .toolbar button {
+  border-radius: 3px;
+  padding: 3px;
+}
+.area .toolbar .delete {
+  background-color: gray;
 }
 </style>
