@@ -8,8 +8,8 @@
       @mousedown.self="onMouseDown"
       @mousemove.self="onMouseMoveDebounced"
       @mouseup.self="onMouseUp"
-    ></div>
-    <div v-if="isCurrentlyDrawing" ref="currentlyDrawing" :style="currentlyDrawingStyles"></div>
+    />
+    <div v-if="isCurrentlyDrawing" ref="currentlyDrawing" :style="currentlyDrawingStyles" />
     <div
       v-for="(area, index) in areas"
       :key="`area-${index}`"
@@ -20,6 +20,7 @@
       <slot name="toolbar" v-bind="{area, index}">
         <template v-if="removable">
           <div class="toolbar">
+            <button class="edit" @click="onEditLabel(area)" title="Edit name">🏷</button>
             <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
           </div>
         </template>
@@ -70,7 +71,7 @@ export default {
       type: [String, Number],
       default: '100%',
     },
-    modelValue: {
+    value: {
       type: Array,
       default: () => [],
     },
@@ -79,7 +80,6 @@ export default {
       default: true,
     },
   },
-  emits: ['update:modelValue', 'added'],
 
   data: () => ({
     areas: [],
@@ -90,9 +90,9 @@ export default {
 
   watch: {
     areas(newAreas) {
-      this.$emit('update:modelValue', newAreas);
+      this.$emit('input', newAreas);
     },
-    modelValue(newAreas) {
+    value(newAreas) {
       this.areas = newAreas;
     },
   },
@@ -135,7 +135,6 @@ export default {
     },
   },
 
-
   created() {
     this.resetCurrentlyDrawing();
     this.onMouseMoveDebounced = debounce(this.onMouseMove, 10);
@@ -143,7 +142,7 @@ export default {
 
   methods: {
     onImageLoaded(event) {
-      this.areas = this.modelValue.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
+      this.areas = this.value.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
       this.bindInteractionEvents();
     },
     bindInteractionEvents() {
@@ -288,7 +287,6 @@ export default {
       this.areas.push(this.currentlyDrawing);
       this.$emit('added', this.currentlyDrawing);
       this.resetCurrentlyDrawing();
-
     },
     onMouseMove(event) {
       if (!this.isCurrentlyDrawing) {
@@ -306,7 +304,6 @@ export default {
 
       this.currentlyDrawing.width = width - padding;
       this.currentlyDrawing.height = height - padding;
-
 
       if (imageY < this.currentlyDrawing.startY) {
         this.currentlyDrawing.top = imageY + padding;
