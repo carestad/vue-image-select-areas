@@ -17,7 +17,7 @@ Uses interact.js for resizing and moving areas around.
 
 | Name | Data |
 | -- | -- |
-| `update:modelValue` | Array of selected areas |
+| `input` | Array of selected areas |
 | `added` | Object of recently added area |
 
 ### Emitted v-model data
