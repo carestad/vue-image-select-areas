@@ -92,8 +92,12 @@ export default {
     areas(newAreas) {
       this.$emit('input', newAreas);
     },
-    value(newAreas) {
-      this.areas = newAreas;
+    value(newAreas, oldAreas) {
+      if (JSON.stringify(newAreas) === JSON.stringify(oldAreas)) {
+        return;
+      }
+
+      this.areas = newAreas.map((area) => this.computeExistingAreaSizes(area, this.$refs.image));
     },
   },
 
