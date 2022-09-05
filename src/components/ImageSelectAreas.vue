@@ -326,7 +326,7 @@ export default {
     },
     onEditLabel(index) {
       const area = this.areas[index];
-      const label = prompt('Label', area.label || '');
+      const label = prompt('Label', area?.label || '');
       this.areas.splice(index, 1, {
         ...area,
         label,
