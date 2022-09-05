@@ -1,5 +1,5 @@
 <template>
-  <div class="root" :style="rootStyle">
+  <div class="image-select-areas" :style="rootStyle">
     <img :src="url" ref="image" :style="imageStyles" :width="width" :height="height" @load="onImageLoaded" />
     <div
       ref="overlay"
