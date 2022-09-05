@@ -20,7 +20,7 @@
       <slot name="toolbar" v-bind="{area, index}">
         <template v-if="removable">
           <div class="toolbar">
-            <button class="edit" @click="onEditLabel(area)" title="Edit name">🏷</button>
+            <button class="edit" @click="onEditLabel(index)" title="Edit name">🏷</button>
             <button class="delete" @click="onDeleteArea(index)" title="Remove">🗑</button>
           </div>
         </template>
@@ -323,6 +323,14 @@ export default {
 
     onDeleteArea(index) {
       this.areas.splice(index, 1);
+    },
+    onEditLabel(index) {
+      const area = this.areas[index];
+      const label = prompt('Label', area.label || '');
+      this.areas.splice(index, 1, {
+        ...area,
+        label,
+      });
     },
   },
 };
