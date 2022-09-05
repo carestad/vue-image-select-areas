@@ -150,8 +150,6 @@ export default {
       this.bindInteractionEvents();
     },
     bindInteractionEvents() {
-      const image = this.$refs.image;
-      const imageBounding = image.getBoundingClientRect();
       const interaction = interact('.area');
 
       const restrictToParent = interact.modifiers.restrict({
@@ -164,6 +162,7 @@ export default {
           start: (event) => {
           },
           move: (event) => {
+            const image = this.$refs.image;
             const areaIndex = event.target.getAttribute('data-index');
             const area = this.areas[areaIndex];
             area.top += event.dy;
@@ -183,6 +182,8 @@ export default {
         ],
         listeners: {
           move: (event) => {
+            const image = this.$refs.image;
+            const imageBounding = image.getBoundingClientRect();
             const areaIndex = event.target.getAttribute('data-index');
             const area = this.areas[areaIndex];
 
