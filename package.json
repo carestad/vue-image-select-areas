@@ -1,7 +1,7 @@
 {
   "name": "vue-image-select-areas",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "./src/components/ImageSelectAreas.vue",
   "scripts": {
     "start": "vite",
